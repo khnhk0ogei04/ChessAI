@@ -53,9 +53,11 @@ def main():
                     if move in validMoves:
                         gs.makeMove(move)
                         moveMade = True
-                    # Reset user's click
-                    sqSelected = ()
-                    playerClicks = []
+                        # Reset user's click if they make a valid move
+                        sqSelected = ()
+                        playerClicks = []
+                    else:
+                        playerClicks = [sqSelected]
             # Key handler:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_z:
