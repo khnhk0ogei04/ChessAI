@@ -24,14 +24,33 @@ def main():
     screen.fill(pygame.Color('white'))
     gs = ChessEngine.GameState()
     load_images()
-    while True:
+    running = True
+    # No square is selected, keep track of the last click of the user
+    sqSelected = ()
+    playerClicks = [] # Keep track of player clicks (two tuples: [(6, 4), (4, 4)])
+    while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 location = pygame.mouse.get_pos()
+                # (x, y): Location of mouse
                 col = location[0] // SQ_SIZE
                 row = location[1] // SQ_SIZE
+                if sqSelected == (row, col): # Click the square twice
+                    sqSelected = () # deselect the square
+                    playerClicks = [] # Clear player clicks
+                else:
+                    sqSelected = (row, col)
+                    playerClicks.append(sqSelected)
+                if len(playerClicks) == 2: # After 2nd click
+                    move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
+                    print(move.getChessNotation())
+                    gs.makeMove(move)
+                    # Reset user's click
+                    sqSelected = ()
+                    playerClicks = []
+
 
         drawGameState(screen, gs)
         clock.tick(MAX_FPS)
