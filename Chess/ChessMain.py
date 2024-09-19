@@ -23,6 +23,9 @@ def main():
     clock = pygame.time.Clock()
     screen.fill(pygame.Color('white'))
     gs = ChessEngine.GameState()
+    validMoves = gs.getValidMoves()
+    moveMade = False # Flag: variable when a move is made
+
     load_images()
     running = True
     # No square is selected, keep track of the last click of the user
@@ -32,6 +35,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            # Handle mouse event:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 location = pygame.mouse.get_pos()
                 # (x, y): Location of mouse
@@ -46,12 +50,21 @@ def main():
                 if len(playerClicks) == 2: # After 2nd click
                     move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
                     print(move.getChessNotation())
-                    gs.makeMove(move)
+                    if move in validMoves:
+                        gs.makeMove(move)
+                        moveMade = True
                     # Reset user's click
                     sqSelected = ()
                     playerClicks = []
+            # Key handler:
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_z:
+                    gs.undoMove()
+                    moveMade = True
 
-
+        if moveMade:
+            validMoves = gs.getValidMoves()
+            moveMade = False
         drawGameState(screen, gs)
         clock.tick(MAX_FPS)
         pygame.display.flip()
